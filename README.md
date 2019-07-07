@@ -1,1 +1,1 @@
-# store-manager
+# Bamazon: Stock CLI You Didn't Know You Needed

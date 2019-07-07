@@ -1,0 +1,26 @@
+{
+  "name": "store-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cfpaige/store-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cfpaige/store-manager/issues"
+  },
+  "homepage": "https://github.com/cfpaige/store-manager#readme",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "clear": "^0.1.0",
+    "figlet": "^1.2.3",
+    "inquirer": "^6.4.1",
+    "mysql": "^2.17.1"
+  }
+}
