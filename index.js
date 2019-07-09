@@ -42,51 +42,53 @@ var connection = mysql.createConnection({
 
 // this is passed from runStore() below to check for credentials:
 function checkPassword() {
-  inquirer.prompt({
-    type: 'password',
-    name: 'employeePass',
-    message: 'Enter your password:',
-    mask: '*'
-  }).then(function (user) {
-    if (user.employeePass === 'managerView') {
-      // show the manager view (in the manager.js script):
-      Mngr.runManager();
-    }
-    else if (user.employeePass === 'superView') {
-      // show the supervisor view (in the supervisor.js script):
-      Supr.runSuper();
-    }
-    else {
-      inquirer
-        .prompt({
-          name: 'wrongPass',
-          type: 'list',
-          message: 'Wrong password. Would you like to [TRY AGAIN], enter as a [CUSTOMER] or [EXIT]?',
-          choices: ['TRY AGAIN', 'CUSTOMER', 'EXIT']
-        })
-        .then(function (user) {
-          var userPass = user.wrongPass;
-          switch (userPass) {
-            case 'TRY AGAIN':
-              checkPassword();
-              break;
-            case 'CUSTOMER':
-              Cust.runCustomer();
-              break;
-            case 'EXIT':
-              console.log('\n' + 'Thanks for visiting BAMAZON! Please come again soon!'.yellow + '\n');
-              break;
-          };
-        });
-    };
-  })
+  inquirer
+    .prompt({
+      type: 'password',
+      name: 'employeePass',
+      message: 'Enter your password:',
+      mask: '*'
+    })
+    .then(function (user) {
+      if (user.employeePass === 'managerView') {
+        // show the manager view (in the manager.js script):
+        Mngr.runManager();
+      }
+      else if (user.employeePass === 'superView') {
+        // show the supervisor view (in the supervisor.js script):
+        Supr.runSuper();
+      }
+      else {
+        inquirer
+          .prompt({
+            name: 'wrongPass',
+            type: 'list',
+            message: 'Wrong password. Would you like to [TRY AGAIN], enter as a [CUSTOMER] or [EXIT]?',
+            choices: ['TRY AGAIN', 'CUSTOMER', 'EXIT']
+          })
+          .then(function (user) {
+            var userPass = user.wrongPass;
+            switch (userPass) {
+              case 'TRY AGAIN':
+                checkPassword();
+                break;
+              case 'CUSTOMER':
+                Cust.runCustomer();
+                break;
+              case 'EXIT':
+                console.log('\n' + 'Thanks for visiting BAMAZON! Please come again soon!'.yellow + '\n');
+                break;
+            };
+          });
+      };
+    })
     .catch(error => console.log(error));
 };
 
 // ============================== MAIN ==============================
 
-// the one function to rule them all:
-function runStore() {
+// the one function to rule them all (exporting so it's available to other scripts:):
+exports.runStore = function runStore() {
   // first use inquirer to check if customer or employee:
   inquirer
     .prompt({
@@ -102,7 +104,8 @@ function runStore() {
           Cust.runCustomer();
           break;
         case 'MANAGER':
-          checkPassword();
+          // checkPassword();
+          Mngr.runManager();
           break;
         case 'SUPERVISOR':
           checkPassword();
@@ -120,5 +123,5 @@ function runStore() {
 
 connection.connect(function (err) {
   if (err) throw err;
-  runStore();
+  exports.runStore();
 });
