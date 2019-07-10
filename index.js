@@ -1,7 +1,6 @@
 // main logic packages:
 var inquirer = require('inquirer');
 var mysql = require('mysql');
-// require('dotenv').config(); - this doesn't seem to work - why not??
 
 // app specific constructors:
 var Cust = require('./js/customer');
@@ -18,7 +17,7 @@ const figlet = require('figlet');
 // at launch, clear the screen and display the app's name:
 clear();
 console.log(
-    figlet.textSync('Welcome  to  BAMAZON!', { horizontalLayout: 'full' }).rainbow
+  figlet.textSync('Welcome  to  BAMAZON!', { horizontalLayout: 'full' }).rainbow
 );
 console.log('\n' + 'Your go-to destination for all things dinosaur!'.green + '\n');
 
@@ -104,11 +103,14 @@ exports.runStore = function runStore() {
           Cust.runCustomer();
           break;
         case 'MANAGER':
-          // checkPassword();
-          Mngr.runManager();
+          checkPassword();
+          // for testing purposes, I commented out the checkPassword() and ran the required scripts immediately:
+          // Mngr.runManager();
           break;
         case 'SUPERVISOR':
           checkPassword();
+          // for testing purposes, I commented out the checkPassword() and ran the required scripts immediately:
+          // Supr.runSuper();
           break;
         case 'EXIT':
           console.log('\n' + 'Thanks for visiting BAMAZON! Please come again soon!'.yellow + '\n');

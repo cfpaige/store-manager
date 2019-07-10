@@ -42,7 +42,7 @@ exports.runManager = function runManager() {
             name: 'storeMng',
             type: 'list',
             message: 'Would you like to view ' + '[ALL PRODUCTS]'.yellow + ' for sale, view ' + '[LOW INVENTORY]'.yellow + ' only, ' + '[UPDATE EXISTING]'.yellow + ' products, or ' + '[ADD NEW]'.yellow + ' item? \n' +
-            'You can also ' + '[CHANGE ACCESS]'.yellow + ' credentials by going back to login. ' + '[EXIT]'.yellow + ' to quit the store. \n',
+                'You can also ' + '[CHANGE ACCESS]'.yellow + ' credentials by going back to login. ' + '[EXIT]'.yellow + ' to quit the store. \n',
             choices: ['ALL PRODUCTS', 'LOW INVENTORY', 'UPDATE EXISTING', 'ADD NEW', 'CHANGE ACCESS', 'EXIT']
         })
         .then(function (answer) {
@@ -74,7 +74,7 @@ exports.runManager = function runManager() {
 };
 
 // ======================== LOCAL FUNCTIONS =========================
- 
+
 function checkStock() {
     connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products ORDER BY department_name, item_id',
         function (err, res) {
@@ -100,6 +100,7 @@ function checkStock() {
     )
 };
 
+// ------------------------------------------------------------------
 function checkLow() {
     connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products WHERE stock_quantity <= 5 ORDER BY item_id', function (err, res) {
         if (err) throw err;
@@ -119,7 +120,7 @@ function checkLow() {
     })
 };
 
-
+// ------------------------------------------------------------------
 function updateStock() {
 
     connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products ORDER BY item_id',
@@ -138,23 +139,23 @@ function updateStock() {
             console.log(stockTable.toString());
             console.log(('\n The products currently in stock are listed in the table above. Low stock quantities in red. \n'.green));
             inquirer
-            .prompt({
-                type: 'input',
-                name: 'itemId',
-                message: 'Enter the ID of the item you\'d like to update.',
-                validate: function (value) {
-                    // make sure the customer can only enter a number, and that the number is larger than zero but no more than available stock:
-                    var valid = !isNaN(parseFloat(value));
-                    return valid || 'The item ID is the number in the first column of the table above. Please enter the number only.';
-                },
-                filter: Number
-            })
-            .then(function (selected, err) {
-                if (err) throw err;
-                selectedId.push(selected.itemId);
-                // ask the manager to set new values for the product:
-                newValues();
-            });
+                .prompt({
+                    type: 'input',
+                    name: 'itemId',
+                    message: 'Enter the ID of the item you\'d like to update.',
+                    validate: function (value) {
+                        // make sure the customer can only enter a number, and that the number is larger than zero but no more than available stock:
+                        var valid = !isNaN(parseFloat(value));
+                        return valid || 'The item ID is the number in the first column of the table above. Please enter the number only.';
+                    },
+                    filter: Number
+                })
+                .then(function (selected, err) {
+                    if (err) throw err;
+                    selectedId.push(selected.itemId);
+                    // ask the manager to set new values for the product:
+                    newValues();
+                });
         });
 };
 
@@ -218,7 +219,7 @@ function updateQuery() {
     });
 };
 
-
+// ------------------------------------------------------------------
 function newProduct() {
     connection.query(
         'SELECT department_name FROM products GROUP BY department_name', function (err, res) {

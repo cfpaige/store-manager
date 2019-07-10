@@ -23,6 +23,8 @@ var inventory = [];
 var shopping = [];
 // stores all products bought this session:
 var purchases = [];
+// stores the total for the current item:
+var itemTotal = 0;
 // stores the total price of all session purchases: 
 var grandTotal = 0;
 
@@ -54,7 +56,6 @@ exports.runCustomer = function runCustomer() {
             //     // prototype Set filters unique values from an array and into an object; Array.from turns that object back into an array:
             //     const depts = Array.from(new Set(dbDepts));
             // -----------------------------------------------------------------------------------------
-
 
             // now ask the customer which depatment they'd like to see:
             inquirer
@@ -105,7 +106,7 @@ function buyItem() {
             type: 'list',
             name: 'browsing',
             message: 'Would you like to shop this department or see another one? \n' +
-            'You can also [CHANGE ACCESS] credentials by going back to login. [EXIT] to quit the store.',
+                'You can also [CHANGE ACCESS] credentials by going back to login. [EXIT] to quit the store.',
             choices: ['SHOP HERE', 'DIFFERENT DEPARTMENT', 'CHANGE ACCESS', 'EXIT']
         })
         .then(function (answer, err) {
@@ -188,7 +189,7 @@ function myBasket() {
                         .then(function (amount, err) {
                             if (err) throw err;
                             var itemQuant = parseInt(amount.quantity);
-                            var itemTotal = parseFloat(itemPrice * itemQuant);
+                            itemTotal = parseFloat(itemPrice * itemQuant);
                             inquirer
                                 .prompt({
                                     type: 'confirm',
@@ -223,7 +224,10 @@ function checkout() {
     connection.query(
         "UPDATE products SET ? WHERE ?",
         [
-            { stock_quantity: shopping.inStock - shopping.itemQuant },
+            {
+                stock_quantity: shopping.inStock - shopping.itemQuant,
+                product_sales: itemTotal
+            },
             { product_name: shopping.itemName }
         ],
         function (err, res) {
