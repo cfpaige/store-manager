@@ -80,6 +80,10 @@ function checkStock() {
         function (err, res) {
             if (err) throw err;
             else {
+                stockTable = [];
+                stockTable = new Table({
+                    head: ['Item ID'.cyan, 'Department'.green, 'Product Name'.green, 'Price'.yellow, 'Low Stock'.yellow],
+                });
                 // fill the global stockTable with query data:
                 for (var i = 0; i < res.length; i++) {
                     // this will highligh low stock in red:
@@ -91,7 +95,6 @@ function checkStock() {
                     );
                 }
                 // display the table to the manager and call the next function:
-                console.log('\n');
                 console.log(stockTable.toString());
                 console.log(('\n The products currently in stock are listed in the table above. Low stock quantities in red. \n'.green));
                 exports.runManager();
@@ -105,6 +108,10 @@ function checkLow() {
     connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products WHERE stock_quantity <= 5 ORDER BY item_id', function (err, res) {
         if (err) throw err;
         else {
+            lowTable = [];
+            lowTable = new Table({
+                head: ['Item ID'.cyan, 'Department'.green, 'Product Name'.green, 'Price'.yellow, 'Low Stock'.yellow],
+            });
             // fill the global lowTable variable with query data:
             for (var i = 0; i < res.length; i++) {
                 lowTable.push(
@@ -112,7 +119,6 @@ function checkLow() {
                 );
             }
             // display the table and call the next function:
-            console.log('\n');
             console.log(lowTable.toString());
             console.log(('\n The products running low are listed in the table above. \n'.green));
             exports.runManager();
@@ -184,6 +190,12 @@ function newValues() {
                     message: 'Update the price of the ' + res[0].product_name + '?\n' +
                         'Type new, or confirm current: ',
                     default: res[0].price,
+                    validate: function (value) {
+                        // make sure the customer can only enter a number:
+                        var valid = !isNaN(parseFloat(value));
+                        return valid || 'The item price should be a number with no more than two decimal points.';
+                    },
+                    filter: Number
                 },
                 {
                     type: 'input',
@@ -203,18 +215,16 @@ function newValues() {
 function updateQuery() {
     connection.query('UPDATE products SET ? WHERE ?', [{ department_name: getNew[1], product_name: getNew[2], price: getNew[3], stock_quantity: getNew[4] }, { item_id: getNew[0] }], function (err, res) {
         if (err) throw err;
-        console.log('\n Here\'s the updated product:'.green)
     });
-    connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products WHERE ?', { item_id: getNew[0] }, function (err, res) {
+    connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products WHERE ?', { item_id: getNew[0] }, function (err, response) {
         if (err) throw err;
-        checkTable = [];
         checkTable.push(
-            [res[0].item_id, res[0].department_name, res[0].product_name, '$' + (res[0].price).toFixed(2), res[0].stock_quantity]
+            [response[0].item_id, response[0].department_name, response[0].product_name, '$' + (response[0].price).toFixed(2), response[0].stock_quantity]
         );
         // display the table to the manager and call the next function:
-        console.log('Here\'s the updated item: \n'.green);
+        console.log('\n Here\'s the updated item:'.green);
         console.log(checkTable.toString());
-        console.log('\n');
+        console.log('\n Next,');
         exports.runManager();
     });
 };
@@ -268,9 +278,9 @@ function newProduct() {
                                     [res[0].item_id, res[0].department_name, res[0].product_name, '$' + (res[0].price).toFixed(2), res[0].stock_quantity]
                                 );
                                 // display the table to the manager and call the next function:
-                                console.log('Here\'s the new item: \n'.green);
+                                console.log('\n Here\'s the new item:'.green);
                                 console.log(checkTable.toString());
-                                console.log('\n');
+                                console.log('\n Next,');
                                 exports.runManager();
                             });
                         }

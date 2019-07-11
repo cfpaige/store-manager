@@ -122,6 +122,20 @@ function buyItem() {
                     exports.runCustomer();
                     break;
                 case 'CHANGE ACCESS':
+                    if (purchases.length > 0) {
+                        var shopTable = new Table({
+                            head: ['Product Name'.green, 'Unit Price'.yellow, 'Quantity'.yellow, 'Total'.magenta],
+                        })
+                        for (var i = 0; i < purchases.length; i++) {
+                            shopTable.push(
+                                [purchases[i].itemName, "$" + purchases[i].itemPrice, purchases[i].itemQuant, "$" + purchases[i].itemTotal]
+                            );
+                        }
+                        console.log('\n Here is the summary of your purchases today:'.yellow)
+                        console.log(shopTable.toString());
+                        console.log(('You have spent a total of $' + grandTotal.toFixed(2) + '\n\n').cyan +
+                            'Next,')
+                    };
                     // this passes it back to index.js:
                     Redo.runStore();
                     break;
@@ -138,8 +152,8 @@ function buyItem() {
                         }
                         console.log('\n Here is the summary of your purchases today:'.yellow)
                         console.log(shopTable.toString());
-                        console.log('\n You have spent a total of $' + grandTotal.toFixed(2) + '\n\n' +
-                            'Thanks for visiting BAMAZON! Please come again soon!'.yellow + '\n');
+                        console.log('You have spent a total of $' + grandTotal.toFixed(2) + '\n\n' +
+                            'Thanks for visiting BAMAZON! Please come again soon!'.cyan + '\n');
                         connection.end();
                         process.exit();
                     } else {

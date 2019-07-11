@@ -66,11 +66,21 @@ function salesView() {
             if (err) throw err;
             else {
                 for (var i = 0; i < res.length; i++) {
+                    // turn results into valid decimals:
                     res[i].over_head_costs = (parseFloat(res[i].over_head_costs)).toFixed(2);
-                    res[i].department_total = (parseFloat(res[i].department_total)).toFixed(2);
+                    // for departments without products, validate so it doesn't display isNan instead of 0:
+                    if (!isNaN(parseFloat(res[i].department_total))) {
+                    // if it's a number, make it a decimal:
+                        res[i].department_total = (parseFloat(res[i].department_total)).toFixed(2);
+                    } else {
+                        // if not, make it a 0, then subtract overheads from 0 to create a dept profit value for this dept:
+                        res[i].department_total = 0;
+                        res[i].department_profit = 0 - res[i].over_head_costs;
+                    };
+                    // if profit below 0, highlight in red:
                     if (res[i].department_profit < 0) {
                         res[i].department_profit = colors.red((parseFloat(res[i].department_profit)).toFixed(2));
-                        }
+                    };
                     salesTable.push([res[i].department_id, res[i].department_name, '$' + res[i].over_head_costs, '$' + res[i].department_total, res[i].department_profit]);
                 }
                 console.log(salesTable.toString());
@@ -83,7 +93,9 @@ function salesView() {
 function newDept() {
     connection.query('SELECT department_id, department_name FROM departments ORDER BY department_id', function (err, res) {
         if (err) throw err;
+        // create tempDeptID to avoid duplicating department names (otherwise MySQL throws an error)
         for (var i = 0; i < res.length; i++) {
+            tempDeptID = [];
             if (i === res.length - 1) {
                 tempDeptID.push(res[i].department_id + 1);
             }
@@ -93,7 +105,7 @@ function newDept() {
                 [{
                     name: 'addDept',
                     message: 'What is the name of the department you\'re adding?',
-                    // adding temporary ID to avoid name duplication
+                    // add temporary ID here
                     default: 'New Department #' + tempDeptID
                 },
                 {
@@ -112,11 +124,11 @@ function newDept() {
                     function (err, res) {
                         console.log('deptName: ' + newD.addDept)
                         if (err) throw err;
-                        connection.query('SELECT * FROM departments WHERE ?', { department_name: newD.addDept }, function (err, res) {
+                        connection.query('SELECT * FROM departments WHERE ?', { department_name: newD.addDept }, function (err, response) {
                             if (err) throw err;
-                            res[0].over_head_costs = (parseFloat(res[0].over_head_costs)).toFixed(2)
+                            response[0].over_head_costs = (parseFloat(response[0].over_head_costs)).toFixed(2)
                             addedTable.push(
-                                [res[0].department_id, res[0].department_name, '$' + res[0].over_head_costs]
+                                [response[0].department_id, response[0].department_name, '$' + response[0].over_head_costs]
                             );
                             //     // display the table to the manager and call the next function:
                             console.log('\n Here\'s the new item:'.green);

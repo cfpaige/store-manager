@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/cfpaige/store-manager#readme",
   "dependencies": {
-    "chalk": "^2.4.2",
     "clear": "^0.1.0",
     "cli-table3": "^0.5.1",
     "colors": "^1.3.3",
