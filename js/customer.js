@@ -1,5 +1,5 @@
-// var Redo is being exported here to allow customer.js to access the runStore() function in index.js:
-var Redo = require('../index.js')
+// var Redo is being exported here to allow customer.js to access the runStore() function in main.js:
+var Redo = require('../main.js')
 var Table = require('cli-table3');
 var colors = require('colors');
 var inquirer = require('inquirer');
@@ -23,19 +23,26 @@ var inventory = [];
 var shopping = [];
 // stores all products bought this session:
 var purchases = [];
+// department the customer's shopping in right now:
+var currentDept = [];
 // stores the total for the current item:
 var itemTotal = 0;
 // stores the total price of all session purchases: 
 var grandTotal = 0;
 
+var shopTable = new Table({
+    head: ['Product Name'.green, 'Unit Price'.yellow, 'Quantity'.yellow, 'Total'.magenta],
+});
+
 // ======================== GLOBAL FUNCTION =========================
 
-// this passes the runCustomer() function to index.js:
+// this passes the runCustomer() function to main.js:
 exports.runCustomer = function runCustomer() {
 
     // limit shopping choices by department (to make presentation and flow better):
     connection.query(
-        'SELECT department_name FROM products GROUP BY department_name', function (err, res) {
+        // this prevents it from displaying sold out departments:
+        'SELECT department_name, stock_quantity FROM products WHERE stock_quantity > 0 GROUP BY department_name', function (err, res) {
             if (err) throw err;
             var depts = [];
             for (i = 0; i < res.length; i++) {
@@ -70,7 +77,9 @@ exports.runCustomer = function runCustomer() {
                 // now query the database for all items in the chosen department:
                 .then(function (response, err) {
                     if (err) throw err;
-                    connection.query('SELECT item_id, product_name, price FROM products WHERE ?',
+                    currentDept = [];
+                    currentDept.push(response.deptChoice);
+                    connection.query('SELECT item_id, product_name, price FROM products WHERE ? AND stock_quantity > 0',
                         { department_name: response.deptChoice },
                         function (err, res) {
                             // create a table to hold returned items:
@@ -123,7 +132,8 @@ function buyItem() {
                     break;
                 case 'CHANGE ACCESS':
                     if (purchases.length > 0) {
-                        var shopTable = new Table({
+                        shopTable = []
+                        shopTable = new Table({
                             head: ['Product Name'.green, 'Unit Price'.yellow, 'Quantity'.yellow, 'Total'.magenta],
                         })
                         for (var i = 0; i < purchases.length; i++) {
@@ -131,18 +141,22 @@ function buyItem() {
                                 [purchases[i].itemName, "$" + purchases[i].itemPrice, purchases[i].itemQuant, "$" + purchases[i].itemTotal]
                             );
                         }
+                        purchases = [];
+                        
+                        // let prettyGrandTotal = (parseFloat(grandTotal)).toFixed(2)
+
                         console.log('\n Here is the summary of your purchases today:'.yellow)
                         console.log(shopTable.toString());
-                        console.log(('You have spent a total of $' + grandTotal.toFixed(2) + '\n\n').cyan +
+                        console.log(('You have spent a total of $' + grandTotal + '\n\n').cyan +
                             'Next,')
                     };
-                    // this passes it back to index.js:
+                    // this passes it back to main.js:
                     Redo.runStore();
                     break;
                 case 'EXIT':
                     // if condition to make sure an empty table isn't generated if the customer made no purchases:
                     if (purchases.length > 0) {
-                        var shopTable = new Table({
+                        shopTable = new Table({
                             head: ['Product Name'.green, 'Unit Price'.yellow, 'Quantity'.yellow, 'Total'.magenta],
                         })
                         for (var i = 0; i < purchases.length; i++) {
@@ -152,14 +166,16 @@ function buyItem() {
                         }
                         console.log('\n Here is the summary of your purchases today:'.yellow)
                         console.log(shopTable.toString());
-                        console.log('You have spent a total of $' + grandTotal.toFixed(2) + '\n\n' +
+                        console.log('You have spent a total of $' + grandTotal + '\n\n' +
                             'Thanks for visiting BAMAZON! Please come again soon!'.cyan + '\n');
                         connection.end();
                         process.exit();
+                        break;
                     } else {
                         console.log('\n' + 'Thanks for visiting BAMAZON! Please come again soon!'.yellow + '\n');
                         connection.end();
                         process.exit();
+                        break;
                     }
             }
         })
@@ -203,12 +219,21 @@ function myBasket() {
                         .then(function (amount, err) {
                             if (err) throw err;
                             var itemQuant = parseInt(amount.quantity);
-                            itemTotal = parseFloat(itemPrice * itemQuant);
+                            itemTotal = (itemPrice * itemQuant)
+                            let prettyItemTotal = (parseFloat(itemTotal)).toFixed(2)
+                            // this removes sold out items from the global array:
+                            if (itemQuant == inStock) {
+                                for (var i = 0; i < inventory.length; i++) {
+                                    if (inventory[i] == choice.buyItem) {
+                                        inventory.splice(i, 1);
+                                    }
+                                }
+                            }
                             inquirer
                                 .prompt({
                                     type: 'confirm',
                                     name: 'payUp',
-                                    message: 'Your total is $' + itemTotal + ' Confirm purchase?',
+                                    message: 'Your total is $' + prettyItemTotal + ' Confirm purchase?',
                                     // 'default: true' means the purchase can be finalized by just pressing Enter:
                                     default: true
                                 })
@@ -216,9 +241,9 @@ function myBasket() {
                                     if (err) throw err;
                                     // if the customer went ahead with purchase, call the function that updates the database:
                                     if (confirm.payUp) {
-                                        shopping = { 'itemName': itemName, 'inStock': inStock, 'itemQuant': itemQuant, 'itemPrice': itemPrice, 'itemTotal': itemTotal }
+                                        shopping = { 'itemName': itemName, 'inStock': inStock, 'itemQuant': itemQuant, 'itemPrice': itemPrice, 'itemTotal': prettyItemTotal }
                                         purchases.push(shopping);
-                                        grandTotal = grandTotal + itemTotal;
+                                        grandTotal = parseFloat(grandTotal) + parseFloat(prettyItemTotal);
                                         checkout();
                                     } else {
                                         // if the customer changed their mind, call the main navigation function again:
@@ -250,7 +275,15 @@ function checkout() {
                 // empty the variable so it's ready to be used with the next item if the customer wants to keep shopping:
                 console.log('\n Thank you for your purchase of ' + colors.yellow(shopping.itemQuant) + ' of ' + colors.green(shopping.itemName) + ' at ' + colors.yellow('$' + shopping.itemPrice) + ' each. (Your total for this item is ' + colors.magenta.underline('$' + shopping.itemTotal) + '.) \n')
                 shopping = [];
-                buyItem();
+                connection.query('SELECT department_name, SUM(stock_quantity) AS stock_total FROM products WHERE ? GROUP BY department_name', { department_name: currentDept[0] }, function (err, res) {
+                    if (err) throw err;
+                    if (res[0].stock_total === 0) {
+                        console.log(currentDept[0] + ' is now all sold out!\n'.yellow);
+                        exports.runCustomer();
+                    } else {
+                        buyItem();
+                    }
+                })
             }
         }
     )

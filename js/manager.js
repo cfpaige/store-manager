@@ -1,5 +1,5 @@
-// var Redo is being exported here to allow customer.js to access the runStore() function in index.js:
-var Redo = require('../index.js')
+// var Redo is being exported here to allow customer.js to access the runStore() function in main.js:
+var Redo = require('../main.js')
 var Table = require('cli-table3');
 var colors = require('colors');
 var inquirer = require('inquirer');
@@ -32,6 +32,7 @@ var checkTable = new Table({
 
 var selectedId = [];
 var getNew = [];
+var validId = [];
 
 // ======================== GLOBAL FUNCTION =========================
 
@@ -61,11 +62,11 @@ exports.runManager = function runManager() {
                     newProduct();
                     break;
                 case 'CHANGE ACCESS':
-                    // this passes it back to index.js:
+                    // this passes it back to main.js:
                     Redo.runStore();
                     break;
                 case 'EXIT':
-                    console.log('\n' + 'Session over. Enter <node index.js> to run again.'.yellow + '\n');
+                    console.log('\n' + 'Session over. Enter <node main.js> to run again.'.yellow + '\n');
                     connection.end();
                     process.exit();
             }
@@ -132,6 +133,7 @@ function updateStock() {
     connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products ORDER BY item_id',
         function (err, res) {
             if (err) throw err;
+            validId = [];
             for (var i = 0; i < res.length; i++) {
                 if (res[i].stock_quantity <= 5) {
                     res[i].stock_quantity = colors.red(res[i].stock_quantity)
@@ -139,8 +141,8 @@ function updateStock() {
                 stockTable.push(
                     [res[i].item_id, res[i].department_name, res[i].product_name, '$' + (res[i].price).toFixed(2), res[i].stock_quantity]
                 );
+                validId.push(res[i].item_id)
             }
-
             // display the table:
             console.log(stockTable.toString());
             console.log(('\n The products currently in stock are listed in the table above. Low stock quantities in red. \n'.green));
@@ -150,14 +152,15 @@ function updateStock() {
                     name: 'itemId',
                     message: 'Enter the ID of the item you\'d like to update.',
                     validate: function (value) {
-                        // make sure the customer can only enter a number, and that the number is larger than zero but no more than available stock:
-                        var valid = !isNaN(parseFloat(value));
-                        return valid || 'The item ID is the number in the first column of the table above. Please enter the number only.';
+                        // make sure the customer can only enter a number, the number is larger than zero and is an id of an existing item:
+                        var valid = !isNaN(parseFloat(value)) && parseInt(value)>0 && validId.includes(parseInt(value));
+                        return valid || 'The item ID is the number in the first column of the table above. Please check the ID you\'re entering exists and enter the number only.';
                     },
                     filter: Number
                 })
                 .then(function (selected, err) {
                     if (err) throw err;
+                    selectedId = [];
                     selectedId.push(selected.itemId);
                     // ask the manager to set new values for the product:
                     newValues();
@@ -218,6 +221,10 @@ function updateQuery() {
     });
     connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products WHERE ?', { item_id: getNew[0] }, function (err, response) {
         if (err) throw err;
+        checkTable = [];
+        checkTable = new Table({
+            head: ['Item ID'.cyan, 'Department'.green, 'Product Name'.green, 'Price'.yellow, 'In Stock'.yellow],
+        })
         checkTable.push(
             [response[0].item_id, response[0].department_name, response[0].product_name, '$' + (response[0].price).toFixed(2), response[0].stock_quantity]
         );
@@ -250,6 +257,7 @@ function newProduct() {
                         type: 'input',
                         name: 'addName',
                         message: 'Enter product name:'
+                        // TODO: filter so if it's a duplicate it alerts the manager and prompts for a different name
                     },
                     {
                         type: 'input',
@@ -274,6 +282,10 @@ function newProduct() {
                             if (err) throw err;
                             connection.query('SELECT item_id, department_name, product_name, price, stock_quantity FROM products WHERE ?', { product_name: added.addName }, function (err, res) {
                                 if (err) throw err;
+                                checkTable = [];
+                                checkTable = new Table({
+                                    head: ['Item ID'.cyan, 'Department'.green, 'Product Name'.green, 'Price'.yellow, 'In Stock'.yellow],
+                                })
                                 checkTable.push(
                                     [res[0].item_id, res[0].department_name, res[0].product_name, '$' + (res[0].price).toFixed(2), res[0].stock_quantity]
                                 );

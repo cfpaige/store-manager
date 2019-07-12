@@ -1,5 +1,5 @@
-// var Redo is being exported here to allow customer.js to access the runStore() function in index.js:
-var Redo = require('../index.js')
+// var Redo is being exported here to allow customer.js to access the runStore() function in main.js:
+var Redo = require('../main.js')
 var Table = require('cli-table3');
 var colors = require('colors');
 var inquirer = require('inquirer');
@@ -36,6 +36,7 @@ exports.runSuper = function runSuper() {
             message: 'Would you like to ' + '[VIEW SALES] by department'.yellow + ', or [ADD NEW] department'.yellow + '? \n' +
                 'You can also ' + '[CHANGE ACCESS]'.yellow + ' credentials by going back to login. ' + '[EXIT]'.yellow + ' to quit the store. \n',
             choices: ['VIEW SALES', 'ADD NEW', 'CHANGE ACCESS', 'EXIT']
+            // TODO: add an option to update/delete a department (for all those theoretical New Department #bazillion)
         })
         .then(function (answer) {
             var suprChoice = answer.suprStore;
@@ -47,11 +48,11 @@ exports.runSuper = function runSuper() {
                     newDept();
                     break;
                 case 'CHANGE ACCESS':
-                    // this passes it back to index.js:
+                    // this passes it back to main.js:
                     Redo.runStore();
                     break;
                 case 'EXIT':
-                    console.log('\n' + 'Session over. Enter <node index.js> to run again.'.yellow + '\n');
+                    console.log('\n' + 'Session over. Enter <node main.js> to run again.'.yellow + '\n');
                     connection.end();
                     process.exit();
             }
@@ -65,6 +66,11 @@ function salesView() {
         function (err, res) {
             if (err) throw err;
             else {
+                // this prevents it from holding duplicate entries if salesView() is run repeatedly:
+                salesTable = [];
+                var salesTable = new Table({
+                    head: ['ID'.cyan, 'Department'.cyan, 'Overhead Cost'.magenta, 'Total Sales'.green, 'Profit'.yellow]
+                })
                 for (var i = 0; i < res.length; i++) {
                     // turn results into valid decimals:
                     res[i].over_head_costs = (parseFloat(res[i].over_head_costs)).toFixed(2);
@@ -131,8 +137,9 @@ function newDept() {
                                 [response[0].department_id, response[0].department_name, '$' + response[0].over_head_costs]
                             );
                             //     // display the table to the manager and call the next function:
-                            console.log('\n Here\'s the new item:'.green);
+                            console.log('\n Added in this session:'.green);
                             console.log(addedTable.toString());
+                            // (should display all new departments, hence the global var addedTable not emptied in advance)
                             console.log('\n Next,');
                             exports.runSuper();
                         })
