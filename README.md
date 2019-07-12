@@ -6,36 +6,33 @@ Bamazon is a node app that can be accessed from the command line to query and wr
 
 This version of Bamazon can be viewed as:
 
-`CUSTOMER`
+#### Customer:
 
-Customer Process Flowchart:
 ![Bamazon Customer Process Flowchart](/img/customer-flow.png)
 
-`MANAGER`
+#### Manager:
 
-Manager Process Flowchart:
 ![Bamazon Manager Process Flowchart](/img/manager-flow.png)
 
-`SUPERVISOR`
+#### Supervisor:
 
-Supervisor Process Flowchart:
 ![Bamazon Supervisor Process Flowchart](/img/super-flow.png)
 
 ## Demo
 
 The store can be navigated from the command line. Flow shown for each of the available paths.
 
-`CUSTOMER`
+#### Customer:
 
-[![Bamazon Customer Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/CUSTOMERVID/0.jpg)](http://www.youtube.com/watch?v=CUSTOMERVID "Bamazon Customer Process Flow in Visual Studio Code Terminal")
+[![Bamazon Customer Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/SNYcW11GXSs/0.jpg)](http://www.youtube.com/watch?v=SNYcW11GXSs "Bamazon Customer Process Flow in Visual Studio Code Terminal")
 
-`MANAGER`
+#### Manager:
 
-[![Bamazon Manager Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/MANAGERVID/0.jpg)](http://www.youtube.com/watch?v=MANAGERVID "Bamazon Manager Process Flow in Visual Studio Code Terminal")
+[![Bamazon Manager Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/YTVF2dGKn40/0.jpg)](http://www.youtube.com/watch?v=YTVF2dGKn40 "Bamazon Manager Process Flow in Visual Studio Code Terminal")
 
-`SUPERVISOR`
+#### Supervisor:
 
-[![Bamazon Supervisor Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/SUPERVID/0.jpg)](http://www.youtube.com/watch?v=SUPERVID "Bamazon Supervisor Process Flow in Visual Studio Code Terminal")
+[![Bamazon Supervisor Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/HV_wMffOv-E/0.jpg)](http://www.youtube.com/watch?v=HV_wMffOv-E "Bamazon Supervisor Process Flow in Visual Studio Code Terminal")
 
 ## Getting started
 
@@ -63,7 +60,7 @@ Standard system requirements to run Bamazon:
 
 Fork or clone the repository from https://github.com/cfpaige/store-manager/.
 
-![Bamazon GitHub repository page screencap](/img/liri-clone.png)
+![GitHub repository page screencap](/img/clone.png)
 
 The app has several dependencies:
 
@@ -94,7 +91,7 @@ This is a CLI (Command Line Interface) demo app. Modify with your preferred data
 
 Use the Issues feature of GitHub to suggest changes or fixes.
 
-![Bamazon Issues menu screencap](/liri-issues.png)
+![Issues menu screencap](/img/issues.png)
 
 #### Authors
 
