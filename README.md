@@ -8,15 +8,15 @@ This version of Bamazon can be viewed as:
 
 #### Customer:
 
-![Bamazon Customer Process Flowchart](/flowcharts/customer-flow.png)
+![Bamazon Customer Process Flowchart](/img/customer-flow.png)
 
 #### Manager:
 
-![Bamazon Manager Process Flowchart](/flowcharts/manager-flow.png)
+![Bamazon Manager Process Flowchart](/img/manager-flow.png)
 
 #### Supervisor:
 
-![Bamazon Supervisor Process Flowchart](/flowcharts/super-flow.png)
+![Bamazon Supervisor Process Flowchart](/img/super-flow.png)
 
 ## Demo
 
@@ -60,7 +60,7 @@ Standard system requirements to run Bamazon:
 
 Fork or clone the repository from https://github.com/cfpaige/store-manager/.
 
-![Bamazon GitHub repository page screencap](/bamazon.png)
+![GitHub repository page screencap](/img/clone.png)
 
 The app has several dependencies:
 
@@ -91,7 +91,7 @@ This is a CLI (Command Line Interface) demo app. Modify with your preferred data
 
 Use the Issues feature of GitHub to suggest changes or fixes.
 
-![Bamazon Issues menu screencap](/bamazon-issues.png)
+![Issues menu screencap](/img/issues.png)
 
 #### Authors
 
