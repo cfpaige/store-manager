@@ -1,5 +1,7 @@
 # Bamazon: The Dinosaur CLI Store You Didn't Know You Needed
 
+![Bamazon Banner](/img/bamazon-banner.png)
+
 Bamazon is a node app that can be accessed from the command line to query and write to a local MySQL database. It has three levels of access (customer, manager and supervisor), and offers local data permanence.
 
 ## Overview
@@ -24,7 +26,7 @@ The store can be navigated from the command line. Flow shown for each of the ava
 
 #### Customer:
 
-[![Bamazon Customer Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/SNYcW11GXSs/0.jpg)](http://www.youtube.com/watch?v=SNYcW11GXSs "Bamazon Customer Process Flow in Visual Studio Code Terminal")
+[![Bamazon Customer Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/HV_wMffOv-E/0.jpg)](http://www.youtube.com/watch?v=HV_wMffOv-E "Bamazon Customer Process Flow in Visual Studio Code Terminal")
 
 #### Manager:
 
@@ -32,7 +34,7 @@ The store can be navigated from the command line. Flow shown for each of the ava
 
 #### Supervisor:
 
-[![Bamazon Supervisor Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/HV_wMffOv-E/0.jpg)](http://www.youtube.com/watch?v=HV_wMffOv-E "Bamazon Supervisor Process Flow in Visual Studio Code Terminal")
+[![Bamazon Supervisor Process Flow in Visual Studio Code Terminal](http://img.youtube.com/vi/HV_wMffOv-E/0.jpg)](http://www.youtube.com/watch?v=SNYcW11GXSs "Bamazon Supervisor Process Flow in Visual Studio Code Terminal")
 
 ## Getting started
 
